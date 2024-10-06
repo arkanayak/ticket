@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package ticket;
+
+option go_package = "/proto";
+
+// User message definition
+message User {
+  string first_name = 1; // First Name
+  string last_name = 2; // Last Name
+  string email = 3; // Email
+}
+
+// UserSeat message definition
+message UserSeat {
+  User user = 1; // User
+  string seat_number = 2; // Seat Number
+  string section = 3; // Section
+}
+
+// PurchaseRequest message definition
+message PurchaseRequest {
+  string from = 1; // Departure location
+  string to = 2; // Destination location
+  User user = 3; // User making the purchase
+  string section = 4; // Section of the seat
+  float price_paid = 5; // Price paid for the ticket
+}
+
+// Receipt message definition
+message Receipt {
+  string from = 1; // Departure location
+  string to = 2; // Destination location
+  User user = 3; // User receiving the receipt
+  string seat_number = 4; // Assigned seat number
+  string section = 5; // Section of the seat
+  float price_paid = 6; // Price paid for the ticket
+}
+
+// UserRequest message definition
+message UserRequest {
+  string email = 1; // Email of the user for retrieving their booking
+}
+
+// UserList message definition
+message UserList {
+  repeated UserSeat seats = 1; // List of seats booked by the user
+}
+
+// ModifySeatRequest message definition
+message ModifySeatRequest {
+  string email = 1;
+  string oldSeatNumber = 2; // Old seat number the user wants to modify
+  string newSeatNumber = 3; // New seat number to assign
+  string section = 4;       // Section where the seat belongs
+}
+
+
+// Response message definition
+message Response {
+  string message = 1; // Response message for operations
+}
+
+// Request message for viewing users and seats by section
+message ViewUsersBySectionRequest {
+  string section = 1; // The section to query
+}
+
+// Response message containing user-seat information
+message UserSeatInfo {
+  User user = 1; // The user information
+  string seat_number = 2; // The assigned seat number
+}
+
+message ViewUsersBySectionResponse {
+  repeated UserSeatInfo user_seats = 1; // List of user-seat information
+}
+
+
+// TicketService service definition
+service TicketService {
+  rpc SubmitPurchase (PurchaseRequest) returns (Receipt) {}
+  rpc ShowReceipt (UserRequest) returns (UserList) {}
+  rpc ModifySeat (ModifySeatRequest) returns (Response) {}
+  rpc RemoveUser (UserRequest) returns (Response) {}
+  rpc ViewUsersBySection(ViewUsersBySectionRequest) returns (ViewUsersBySectionResponse);
+}
